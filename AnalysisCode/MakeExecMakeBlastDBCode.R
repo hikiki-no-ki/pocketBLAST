@@ -1,5 +1,5 @@
-setting <- as.matrix( read.delim( "../setting.txt", header=F, skip=1 ) )
-reference <- list.files( "../reference", full.names=T )[1]
+setting <- as.matrix( read.delim( "../Input/Setting.txt", header=F, skip=1 ) )
+reference <- list.files( "../Input/Reference", full.names=T )[1]
 
 mode <- substring( setting[1,1], 8)
 if( mode != "blastn" && mode != "blastp" ){
