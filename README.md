@@ -34,11 +34,12 @@ Fill in the option of blast+ in ./Input/Setting.txt.
 ( The detail of options is available at: https://www.ncbi.nlm.nih.gov/books/NBK279684/ )
 
 < Execution >
------- Main Analysis ------
+
+<< Main Analysis >>
 % cd ./AnalysisCode
 zsh ./Exec_BLAST.sh
 
------- Additional Analysis ------
+<< Additional Analysis >>
 1. Making 1st hit list
 % cd ./AnalysisCode/ForAdditionalAnalysis
 % Rscript --vanilla --slave ./Make1stHitList.R

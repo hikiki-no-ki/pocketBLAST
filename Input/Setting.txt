@@ -1,7 +1,7 @@
 ##---------- BLAST+ setting ----------##
-mode = blastp			## select "blastn" or "blastp"
+mode = blastn			## select "blastn" or "blastp"
 evalue = 1e-15		    	## set E-value with float value
-output format = 7		## set output format
+output format = 6		## set output format
 word size = #		    	## set word size with int value
 gap open penalty = #	    	## set gap open penalty with int value
 gap extention penalty = #	## set gap extention penalty with int value
