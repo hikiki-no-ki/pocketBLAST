@@ -1,5 +1,4 @@
 ##---------- BLAST+ setting ----------##
-mode = blastn			## select "blastn" or "blastp"
 evalue = 1e-15		    	## set E-value with float value
 output format = 6		## set output format
 word size = #		    	## set word size with int value

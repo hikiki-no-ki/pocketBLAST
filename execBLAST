@@ -1,0 +1,99 @@
+#!/bin/zsh
+##########################################
+# Project: Automatically Execution of BLAST
+# Date: 2019/12/28
+# Author: Yusuke Hiki
+##########################################
+
+# extract input information from arguments
+QUERY=0
+REFERENCE=0
+SETTINGFILE=0
+TARGETGENEFILE=0
+OUTPUTDIR=.
+
+foreach i (`seq $#`)
+if [ $*[$i] = "-m" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        MODE=$*[${i}+1]
+    else
+        echo "ERROR@ -m "
+        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        exit
+    fi
+elif [ $*[$i] = "-q" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        QUERY=$*[${i}+1]
+    else
+        echo "ERROR@ -q "
+        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        exit
+    fi
+elif [ $*[$i] = "-r" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        REFERENCE=$*[${i}+1]
+    else
+        echo "ERROR@ -r "
+        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        exit
+    fi
+elif [ $*[$i] = "-s" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        SETTINGFILE=$*[${i}+1]
+    else
+        echo "ERROR@ -s "
+        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        exit
+    fi
+elif [ $*[$i] = "-t" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        TARGETGENEFILE=$*[${i}+1]
+    else
+        echo "ERROR@ -t "
+        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        exit
+    fi
+elif [ $*[$i] = "-o" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        OUTPUTDIR=$*[${i}+1]
+    else
+        echo "ERROR@ -o "
+        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        exit
+    fi
+fi
+end
+if [ $QUERY = 0 -o $REFERENCE = 0 ]; then
+    echo "ERROR@ -q or -r "
+    echo "USAGE: query and reference must be needed."
+    exit
+fi
+
+echo "\n"
+echo "================================================"
+echo Mode: $MODE
+echo Query: $QUERY
+echo Reference: $REFERENCE
+echo Setting file: $SETTINGFILE
+echo Target genefile: $TARGETGENEFILE
+echo Output directory: $OUTPUTDIR
+echo "================================================"
+echo "\n"
+
+echo Make BLAST DataBase......
+\Rscript --vanilla --slave ./MakeExecMakeBlastDBCode.R $MODE $REFERENCE
+zsh ./tmp_makeblastdb.sh
+echo OK.
+\Rscript --vanilla --slave ./MakeExecBlastCode.R $MODE $QUERY $REFERENCE $SETTINGFILE
+echo Make Query......
+\Rscript --vanilla --slave ./ExtractSeqofFocusedGene.R $QUERY $TARGETGENEFILE $OUTPUTDIR
+echo OK.
+if [ ! -e $OUTPUTDIR ];then
+    mkdir $OUTPUTDIR
+fi
+echo BLAST.......
+zsh ./blast.sh > $OUTPUTDIR/BLAST_Result.txt
+echo OK.
+rm ./tmp_makeblastdb.sh
+rm ${REFERENCE}.???
+echo Completed.
