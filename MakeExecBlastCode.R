@@ -5,7 +5,7 @@
 ##########################################
 
 args <- commandArgs()[ 2:length(commandArgs()) ]
-args <- args[ -grep("-", args) ]
+args <- args[ substring(args, 1, 1)!="-" ]
 mode <- args[1]
 queryfile <- args[2]
 referencefile <- args[3]

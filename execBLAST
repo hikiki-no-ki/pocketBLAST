@@ -11,61 +11,56 @@ REFERENCE=0
 SETTINGFILE=0
 TARGETGENEFILE=0
 OUTPUTDIR=.
+ERRORMESSAGE1="USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+ERRORMESSAGE2="USAGE: query and reference must be needed."
 
 foreach i (`seq $#`)
 if [ $*[$i] = "-m" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         MODE=$*[${i}+1]
     else
-        echo "ERROR@ -m "
-        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        echo " ERROR@ -m option \n" ${ERRORMESSAGE1}
         exit
     fi
 elif [ $*[$i] = "-q" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         QUERY=$*[${i}+1]
     else
-        echo "ERROR@ -q "
-        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        echo " ERROR@ -q  option \n" ${ERRORMASSAGE1}
         exit
     fi
 elif [ $*[$i] = "-r" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         REFERENCE=$*[${i}+1]
     else
-        echo "ERROR@ -r "
-        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        echo "ERROR@ -r option \n" ${ERRORMASSAGE1}
         exit
     fi
 elif [ $*[$i] = "-s" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         SETTINGFILE=$*[${i}+1]
     else
-        echo "ERROR@ -s "
-        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        echo "ERROR@ -s option \n" ${ERRORMASSAGE1}
         exit
     fi
 elif [ $*[$i] = "-t" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         TARGETGENEFILE=$*[${i}+1]
     else
-        echo "ERROR@ -t "
-        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        echo "ERROR@ -t option \n" ${ERRORMASSAGE1}
         exit
     fi
 elif [ $*[$i] = "-o" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         OUTPUTDIR=$*[${i}+1]
     else
-        echo "ERROR@ -o "
-        echo "USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+        echo "ERROR@ -o option \n" ${ERRORMASSAGE1}
         exit
     fi
 fi
 end
 if [ $QUERY = 0 -o $REFERENCE = 0 ]; then
-    echo "ERROR@ -q or -r "
-    echo "USAGE: query and reference must be needed."
+    echo "ERROR@ -q or -r option \n" ${ERRORMASSAGE2}
     exit
 fi
 
@@ -75,7 +70,7 @@ echo Mode: $MODE
 echo Query: $QUERY
 echo Reference: $REFERENCE
 echo Setting file: $SETTINGFILE
-echo Target genefile: $TARGETGENEFILE
+echo Target gene file: $TARGETGENEFILE
 echo Output directory: $OUTPUTDIR
 echo "================================================"
 echo "\n"
@@ -94,6 +89,8 @@ fi
 echo BLAST.......
 zsh ./blast.sh > $OUTPUTDIR/BLAST_Result.txt
 echo OK.
+rm makeblast_log.txt
+rm ./blast.sh
 rm ./tmp_makeblastdb.sh
 rm ${REFERENCE}.???
 echo Completed.

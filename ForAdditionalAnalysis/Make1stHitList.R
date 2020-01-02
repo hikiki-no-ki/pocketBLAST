@@ -5,7 +5,7 @@
 ##########################################
 
 args <- commandArgs()[ 2:length(commandArgs()) ]
-args <- args[ -grep("-", args) ]
+args <- args[ substring(args, 1, 1)!="-" ]
 targetdir <- args[1]
 nameset <- c(args[2], args[3])
 paramset <- c( "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore" )

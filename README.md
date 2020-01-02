@@ -10,9 +10,9 @@ Second, target genes are extracted from query sequences and make the file Sequen
 Finally, blastn or blastp is executed with the parameters written in ./setting.txt or default.
 
 # DEPENDENCY
-  * zsh
-  * blast+
-  * R
+  * zsh >= 5.3
+  * blast+ >=2.7.1 (ftp://ftp.ncbi.nih.gov/blast/executables/blast+/)
+  * R >=3.4.2 (https://cran.r-project.org/index.html)
 
 # EXECUTION
 < Input data format >
@@ -44,6 +44,11 @@ If no specification, current directory ./ is set as default.
 Set command line in the form of -o [output directory path].
 
 < Execution >
+<< Testcase >>
+```zsh
+% ./execBLAST -m blastn -q ./testcase/test_query.fasta -r ./testcase/test_reference.fasta -o ./testcase
+```
+and check the results in ./testcase .
 
 << Main Analysis >>
 ```zsh
@@ -57,4 +62,4 @@ Set command line in the form of -o [output directory path].
 % Rscript ./Make1stHitList.R [result file directory path] [query name] [reference name]
 ```
 
-Have fun!!
+# Have fun!!!

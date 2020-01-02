@@ -7,7 +7,7 @@
 library(seqinr)
 
 args <- commandArgs()[ 2:length(commandArgs()) ]
-args <- args[ -grep("-", args) ]
+args <- args[ substring(args, 1, 1)!="-" ]
 queryfile <- args[1]
 targetgenefile <- args[2]
 outputdir <- args[3]
