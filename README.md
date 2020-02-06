@@ -1,20 +1,18 @@
-==========================
-BLAST+ Development toolkit
-==========================
+# BLAST+ Development toolkit
 
-# OVERVIEW
+## OVERVIEW
 This project contains the programs to execute easily blast+ at CUI from input data including query sequences, 
 reference sequences, target gene names, setting file, and output directory path.
 First, the database is made from reference sequences as pretreatment.
 Second, target genes are extracted from query sequences and make the file Sequence_FocusedGene.fasta.
 Finally, blastn or blastp is executed with the parameters written in ./setting.txt or default.
 
-# DEPENDENCY
+## DEPENDENCY
   * zsh >= 5.3
   * blast+ >=2.7.1 (ftp://ftp.ncbi.nih.gov/blast/executables/blast+/)
   * R >=3.4.2 (https://cran.r-project.org/index.html)
 
-# EXECUTION
+## EXECUTION
 < Input data format >
 1. Reference sequences(fasta format) [MUST]
 Specify the reference sequence file path (in many cases, all nucleotide or amino acid sequences).
@@ -62,4 +60,4 @@ and check the results in ./testcase .
 % Rscript ./Make1stHitList.R [result file directory path] [query name] [reference name]
 ```
 
-# Have fun!!!
+## HAVE FUN !!
