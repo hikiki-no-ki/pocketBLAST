@@ -14,18 +14,18 @@ for(i_arg in 1:length(args)){
     if( !any(c(is.na(args[i_arg+1]), is.na(args[i_arg+2]))) ){
       file1 <- args[i_arg+1]
       file2 <- args[i_arg+2]
-    } else{ print(usage); stop(usage) }
+    } else{ stop(usage) }
   }
   if(args[i_arg]=="-p"){  # -prefix option
     if( !any(c(is.na(args[i_arg+1]), is.na(args[i_arg+2]))) ){
       prefix1 <- args[i_arg+1]
       prefix2 <- args[i_arg+2]
-    } else{ print(usage); stop(usage) }
+    } else{ stop(usage) }
   }
   if(args[i_arg]=="-o"){  # -output_file option
     if( !is.na(args[i_arg+1]) ){
       out_file <- args[i_arg+1]
-    } else{ print(usage); stop(usage) }
+    } else{ stop(usage) }
   }
 }
 
