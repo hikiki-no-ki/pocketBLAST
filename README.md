@@ -57,7 +57,13 @@ and check the results in ./testcase .
 1. Making Single directional Best hit(SBH) list ( "Subset_SBH.txt" is outputed )
 ```zsh
 % cd ./ForAdditionalAnalysis
-% Rscript ./Make1stHitList.R [result file directory path] [query name] [reference name]
+% Rscript MakeSBHSubset.R -t [result file directory path] -p [query prefix] [reference prefix]
+```
+
+2. Making Bi-directional Best hit(BBH) list ("Subset_BBH.txt" is outputed)
+```zsh
+% cd ./ForAddAdditionalAnalysis
+% Rscript MakeBBHSubset.R -f [SBH file 1] [SBH file 2] -p [prefix 1] [prefix 2] -o [output file name]
 ```
 
 ## HAVE FUN !!

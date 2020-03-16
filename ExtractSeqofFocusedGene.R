@@ -7,7 +7,6 @@
 readRenviron("~/.Rprofile")     
 newpath <- gsub(pattern=")",replacement="", x=Sys.getenv(".libPaths(new"))
 .libPaths( new=newpath )
-print( .libPaths() )
 
 library(seqinr)
 
