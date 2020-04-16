@@ -5,16 +5,21 @@
 # Author: Yusuke Hiki
 ##########################################
 
-# extract input information from arguments
+# --- Initialization --- #
 QUERY=0
 REFERENCE=0
 SETTINGFILE=0
 TARGETGENEFILE=0
+DEBUGFLAG=0
 OUTPUTDIR=.
-ERRORMESSAGE1="USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path]"
+
+# --- Error message --- #
+ERRORMESSAGE1="USAGE: ./execBLAST -m ['blastn' or 'blastp'] -q [query file path] -r [reference file path] -s [setting file] -o [output directory path] -d [0 or 1]"
 ERRORMESSAGE2="USAGE: query and reference must be needed."
 
+# --- information extraction from argument --- #
 foreach i (`seq $#`)
+## mode (blastp or blastn)
 if [ $*[$i] = "-m" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         MODE=$*[${i}+1]
@@ -22,6 +27,7 @@ if [ $*[$i] = "-m" ]; then
         echo " ERROR@ -m option \n" ${ERRORMESSAGE1}
         exit
     fi
+## query file path
 elif [ $*[$i] = "-q" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         QUERY=$*[${i}+1]
@@ -29,6 +35,7 @@ elif [ $*[$i] = "-q" ]; then
         echo " ERROR@ -q  option \n" ${ERRORMASSAGE1}
         exit
     fi
+## reference file path
 elif [ $*[$i] = "-r" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         REFERENCE=$*[${i}+1]
@@ -36,6 +43,7 @@ elif [ $*[$i] = "-r" ]; then
         echo "ERROR@ -r option \n" ${ERRORMASSAGE1}
         exit
     fi
+## setting file path
 elif [ $*[$i] = "-s" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         SETTINGFILE=$*[${i}+1]
@@ -43,6 +51,7 @@ elif [ $*[$i] = "-s" ]; then
         echo "ERROR@ -s option \n" ${ERRORMASSAGE1}
         exit
     fi
+## target gene list file path
 elif [ $*[$i] = "-t" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         TARGETGENEFILE=$*[${i}+1]
@@ -50,6 +59,7 @@ elif [ $*[$i] = "-t" ]; then
         echo "ERROR@ -t option \n" ${ERRORMASSAGE1}
         exit
     fi
+## output directory path
 elif [ $*[$i] = "-o" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         OUTPUTDIR=$*[${i}+1]
@@ -57,13 +67,31 @@ elif [ $*[$i] = "-o" ]; then
         echo "ERROR@ -o option \n" ${ERRORMASSAGE1}
         exit
     fi
+## flag for debug mode (0 or 1)
+elif [ $*[$i] = "-d" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        DEBUGFLAG=$*[${i}+1]
+    else
+        echo "ERROR@ -d option \n" ${ERRORMASSAGE1}
+        exit
+    fi
 fi
 end
+
+## exception for no query or no reference
 if [ $QUERY = 0 -o $REFERENCE = 0 ]; then
     echo "ERROR@ -q or -r option \n" ${ERRORMASSAGE2}
     exit
 fi
 
+## set debug mode
+if [ $DEBUGFLAG = 0 ]; then
+    DEBUGMODE=FALSE
+else
+    DEBUGMODE=TRUE
+fi
+
+# --- show paramter --- #
 echo "\n"
 echo "================================================"
 echo Mode: $MODE
@@ -72,25 +100,39 @@ echo Reference: $REFERENCE
 echo Setting file: $SETTINGFILE
 echo Target gene file: $TARGETGENEFILE
 echo Output directory: $OUTPUTDIR
+echo Debug mode: $DEBUGMODE
 echo "================================================"
 echo "\n"
 
+# --- execution --- #
 echo Make BLAST DataBase......
 \Rscript --vanilla --slave ./MakeExecMakeBlastDBCode.R $MODE $REFERENCE
-zsh ./tmp_makeblastdb.sh
-echo OK.
-\Rscript --vanilla --slave ./MakeExecBlastCode.R $MODE $QUERY $REFERENCE $SETTINGFILE
-echo Make Query......
+zsh ./makeblastdb.sh
+echo Done.
+
+echo Make Command for BLAST......
 \Rscript --vanilla --slave ./ExtractSeqofFocusedGene.R $QUERY $TARGETGENEFILE $OUTPUTDIR
-echo OK.
+TARGETSEQFILE=$OUTPUTDIR/SequenceofFocusedGene.fasta
+\Rscript --vanilla --slave ./MakeExecBlastCode.R $MODE $TARGETSEQFILE $REFERENCE $SETTINGFILE
+echo Done.
+
 if [ ! -e $OUTPUTDIR ];then
+    echo Make Output Directory......
     mkdir $OUTPUTDIR
+    echo Done.
 fi
-echo BLAST.......
+
+echo BLASTing.......
 zsh ./blast.sh > $OUTPUTDIR/BLAST_Result.txt
-echo OK.
+echo Done.
+
+echo Cleaning.......
+if [ $DUBUGMODE = FALSE ];then
+    rm ./makeblastdb.sh    
+    rm ./blast.sh
+fi
 rm makeblast_log.txt
-rm ./blast.sh
-rm ./tmp_makeblastdb.sh
 rm ${REFERENCE}.???
+echo Done.
+
 echo Completed.
