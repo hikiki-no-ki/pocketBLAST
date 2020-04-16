@@ -116,7 +116,7 @@ TARGETSEQFILE=$OUTPUTDIR/SequenceofFocusedGene.fasta
 \Rscript --vanilla --slave ./MakeExecBlastCode.R $MODE $TARGETSEQFILE $REFERENCE $SETTINGFILE
 echo Done.
 
-if [ ! -e $OUTPUTDIR ];then
+if [ ! -e $OUTPUTDIR ]; then
     echo Make Output Directory......
     mkdir $OUTPUTDIR
     echo Done.
@@ -127,8 +127,8 @@ zsh ./blast.sh > $OUTPUTDIR/BLAST_Result.txt
 echo Done.
 
 echo Cleaning.......
-if [ $DUBUGMODE = FALSE ];then
-    rm ./makeblastdb.sh    
+if [ $DEBUGMODE = "FALSE" ]; then
+    rm ./makeblastdb.sh
     rm ./blast.sh
 fi
 rm makeblast_log.txt

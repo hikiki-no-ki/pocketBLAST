@@ -18,4 +18,4 @@ if(mode == "blastp"){
   exit()
 }
 
-write(Shellcode, "./tmp_makeblastdb.sh" )
+write(Shellcode, "./makeblastdb.sh" )
