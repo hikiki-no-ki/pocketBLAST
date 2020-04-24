@@ -1,0 +1,175 @@
+#!/bin/zsh
+##########################################
+# Project: pocket-BLAST: automatically execution of BLAST
+# Date: 2019/12/28
+# Author: Yusuke Hiki
+##########################################
+SCRIPTPATH=$(\cd $(\dirname $0); \pwd)
+USAGE1=${SCRIPTPATH}/usage1
+USAGE2=${SCRIPTPATH}/usage2
+HELP=${SCRIPTPATH}/help
+
+# --- Initialization --- #
+QUERY=0
+REFERENCE=0
+SETTINGFILE=0
+TARGETGENEFILE=0
+SBHFLAG=0
+QPREFIX=0
+RPREFIX=0
+DEBUGFLAG=0
+OUTPUTDIR=.
+
+# --- information extraction from argument --- #
+foreach i (`seq $#`)
+## mode (blastp or blastn)
+if [ $*[$i] = "--mode" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        MODE=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --mode option " && cat ${USAGE1}
+        exit
+    fi
+## query file path
+elif [ $*[$i] = "--query" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        QUERY=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --query option " && cat ${USAGE1}
+        exit
+    fi
+## reference file path
+elif [ $*[$i] = "--ref" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        REFERENCE=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --ref option " && cat ${USAGE1}
+        exit
+    fi
+## setting file path
+elif [ $*[$i] = "--setting" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        SETTINGFILE=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --setting option " && cat ${USAGE1}
+        exit
+    fi
+## target gene list file path
+elif [ $*[$i] = "--target" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        TARGETGENEFILE=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --target option " && cat ${USAGE1}
+        exit
+    fi
+## output directory path
+elif [ $*[$i] = "--outdir" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        OUTPUTDIR=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --outdir option " && cat ${USAGE1}
+        exit
+    fi
+## prefix for SBH analysis (query_prefix ref_prefix)
+elif [ $*[$i] = "--sbh" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        if [ `echo $*[$i+2] | cut -c 1-1` != "-" ]; then
+            SBHFLAG=1
+            QPREFIX=$*[${i}+1]
+            RPREFIX=$*[${i}+2]
+        else
+            echo "\e[31;1m ERROR@ --sbh option " && cat ${USAGE1}
+            exit
+        fi
+    else
+        echo "\e[31;1m ERROR@ --sbh option " && cat ${USAGE1}
+        exit
+    fi
+## flag for debug mode (0 or 1)
+elif [ $*[$i] = "--debug" ]; then
+    if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
+        DEBUGFLAG=$*[${i}+1]
+    else
+        echo "\e[31;1m ERROR@ --debug option "
+        cat ${USAGE1}
+        exit
+    fi
+## help document
+elif [ $*[$i] = "--help" ]; then
+    \less ${HELP}
+    exit
+fi
+end
+
+## exception for no query or no reference 
+if [ ${QUERY} = 0 -o ${REFERENCE} = 0 ]; then
+    echo "\e[31;1m ERROR@ --query or --ref option"
+    cat ${USAGE2}
+    exit
+fi
+
+## set SBHMODE mode
+if [ ${SBHFLAG} = 0 ]; then
+    SBHMODE=FALSE
+else
+    SBHMODE="TRUE (query_prefix: ${QPREFIX} ref_prefix: ${RPREFIX})"
+fi
+
+## set debug mode
+if [ ${DEBUGFLAG} = 0 ]; then
+    DEBUGMODE=FALSE
+else
+    DEBUGMODE=TRUE
+fi
+
+# --- show paramter --- #
+echo "\n"
+echo "================================================"
+echo Mode: ${MODE}
+echo Query: ${QUERY}
+echo Reference: ${REFERENCE}
+echo Setting file: ${SETTINGFILE}
+echo Target gene file: ${TARGETGENEFILE}
+echo Output directory: ${OUTPUTDIR}
+echo SBH generation: ${SBHMODE}
+echo Debug mode: ${DEBUGMODE}
+echo "================================================"
+
+# --- execution --- #
+echo "\e[m Make BLAST DataBase......"
+\Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecMakeBlastDBCode.R ${MODE} ${REFERENCE} ${SCRIPTPATH}
+zsh ${SCRIPTPATH}/makeblastdb.sh
+echo "\e[32;1m   Done."
+
+echo "\e[m Make Command for BLAST......"
+\Rscript --vanilla --slave ${SCRIPTPATH}/ExtractSeqofFocusedGene.R ${QUERY} ${TARGETGENEFILE} ${OUTPUTDIR}
+TARGETSEQFILE=${OUTPUTDIR}/SequenceofFocusedGene.fasta
+\Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecBlastCode.R ${MODE} ${TARGETSEQFILE} ${REFERENCE} ${SETTINGFILE} ${SCRIPTPATH}
+echo "\e[32;1m   Done."
+
+if [ ! -e ${OUTPUTDIR} ]; then
+    echo "\e[m Make Output Directory......"
+    \mkdir ${OUTPUTDIR}
+    echo "\e[32;1m   Done."
+fi
+
+echo "\e[m BLASTing......."
+zsh ${SCRIPTPATH}/blast.sh > ${OUTPUTDIR}/BLAST_Result.txt
+echo "\e[32;1m   Done."
+
+if [ ${SBHFLAG} != "FALSE" ]; then
+    echo "\e[m Make Single-directional Best Hit Table......"
+    \Rscript --vanilla --slave ${SCRIPTPATH}/ForAdditionalAnalysis/MakeSBHSubset.R -t ${OUTPUTDIR} -p ${QPREFIX} ${RPREFIX}
+    echo "\e[32;1m   Done."
+fi
+
+echo "\e[m Cleaning......."
+if [ ${DEBUGMODE} = "FALSE" ]; then
+    \rm ${SCRIPTPATH}/makeblastdb.sh
+    \rm ${SCRIPTPATH}/blast.sh
+fi
+\rm ${SCRIPTPATH}/makeblast_log.txt
+\rm ${REFERENCE}.???
+echo "\e[32;1m   Done."
+
+echo "\n\e[32;1m   Completed."

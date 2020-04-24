@@ -29,11 +29,11 @@ if( any(c(is.na(targetdir), is.na(prefix1), is.na(prefix2))) ){
 
 paramset <- c( "pident", "length", "mismatch", "gapopen", "qstart", "qend", "sstart", "send", "evalue", "bitscore" )
 
-print( "========================================" )
-print( paste("Target directory:", targetdir) )
-print( paste("query name", prefix1) )
-print( paste("reference name", prefix2) )
-print( "========================================" )
+# print( "========================================" )
+# print( paste("Target directory:", targetdir) )
+# print( paste("query name", prefix1) )
+# print( paste("reference name", prefix2) )
+# print( "========================================" )
 
 complist <- read.table( paste(targetdir, "BLAST_Result.txt", sep="/") )
 genes <- unique( complist[,1] )

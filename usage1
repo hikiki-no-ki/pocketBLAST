@@ -1,0 +1,10 @@
+ 
+ == Invalid command ==
+ USAGE: pBLAST --mode ['blastn' or 'blastp']
+               --query [query file path]
+               --ref [reference file path]
+               --setting [setting file]
+               --outdir [output directory path]
+               --sbh [query prefix] [reference prefix]
+               --debug [0 or 1]       
+ MORE DEATAIL: pBLAST --help

@@ -10,6 +10,7 @@ mode <- args[1]
 queryfile <- args[2]
 referencefile <- args[3]
 settingfile <- args[4]
+scriptpath <- args[5]
 
 shellcode <- paste( mode, "-db", referencefile, "-query", queryfile )
 
@@ -25,4 +26,4 @@ if(settingfile != "0"){
   shellcode <- paste( shellcode, option[1], "1e-15", option[2], "6" )
 }
 
-write(shellcode, "./blast.sh" )
+write(shellcode, paste(scriptpath, "/blast.sh", sep="") )
