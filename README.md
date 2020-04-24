@@ -1,8 +1,8 @@
-# -------------------------------------------------------- #
-# Project: pocket-BLAST: automatically execution of BLAST  #
-# Date: 2019/12/28                                         #
-# Author: Yusuke Hiki                                      #
-# -------------------------------------------------------- #
+--------------------------------------------------------
+Project: pocket-BLAST: automatically execution of BLAST 
+Date: 2019/12/28                                        
+Author: Yusuke Hiki                                     
+--------------------------------------------------------
 
 ## OVERVIEW
 This project contains the programs to execute easily blast+ at CUI from input data including query sequences,
