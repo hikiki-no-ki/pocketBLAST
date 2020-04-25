@@ -5,11 +5,12 @@
 # Author: Yusuke Hiki
 ##########################################
 SCRIPTPATH=$(\cd $(\dirname $0); \pwd)
-USAGE1=${SCRIPTPATH}/usage1
+USAGE=${SCRIPTPATH}/usage
 USAGE2=${SCRIPTPATH}/usage2
 HELP=${SCRIPTPATH}/help
 
 # --- Initialization --- #
+MODE=0
 QUERY=0
 REFERENCE=0
 SETTINGFILE=0
@@ -27,7 +28,7 @@ if [ $*[$i] = "--mode" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         MODE=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --mode option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --mode option " && cat ${USAGE}
         exit
     fi
 ## query file path
@@ -35,7 +36,7 @@ elif [ $*[$i] = "--query" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         QUERY=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --query option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --query option " && cat ${USAGE}
         exit
     fi
 ## reference file path
@@ -43,7 +44,7 @@ elif [ $*[$i] = "--ref" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         REFERENCE=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --ref option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --ref option " && cat ${USAGE}
         exit
     fi
 ## setting file path
@@ -51,7 +52,7 @@ elif [ $*[$i] = "--setting" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         SETTINGFILE=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --setting option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --setting option " && cat ${USAGE}
         exit
     fi
 ## target gene list file path
@@ -59,7 +60,7 @@ elif [ $*[$i] = "--target" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         TARGETGENEFILE=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --target option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --target option " && cat ${USAGE}
         exit
     fi
 ## output directory path
@@ -67,7 +68,7 @@ elif [ $*[$i] = "--outdir" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         OUTPUTDIR=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --outdir option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --outdir option " && cat ${USAGE}
         exit
     fi
 ## prefix for SBH analysis (query_prefix ref_prefix)
@@ -78,11 +79,11 @@ elif [ $*[$i] = "--sbh" ]; then
             QPREFIX=$*[${i}+1]
             RPREFIX=$*[${i}+2]
         else
-            echo "\e[31;1m ERROR@ --sbh option " && cat ${USAGE1}
+            echo "\e[31;1m ERROR@ --sbh option " && cat ${USAGE}
             exit
         fi
     else
-        echo "\e[31;1m ERROR@ --sbh option " && cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --sbh option " && cat ${USAGE}
         exit
     fi
 ## flag for debug mode (0 or 1)
@@ -90,8 +91,7 @@ elif [ $*[$i] = "--debug" ]; then
     if [ `echo $*[$i+1] | cut -c 1-1` != "-" ]; then
         DEBUGFLAG=$*[${i}+1]
     else
-        echo "\e[31;1m ERROR@ --debug option "
-        cat ${USAGE1}
+        echo "\e[31;1m ERROR@ --debug option " && cat ${USAGE}
         exit
     fi
 ## help document
@@ -102,9 +102,14 @@ fi
 end
 
 ## exception for no query or no reference 
+if [ ${MODE} = 0 ]; then
+    echo "\e[31;1m ERROR@ --mode option\n Mode (blastn or blastp) must be identified. " && cat ${USAGE}
+    exit
+fi
+
+## exception for no query or no reference 
 if [ ${QUERY} = 0 -o ${REFERENCE} = 0 ]; then
-    echo "\e[31;1m ERROR@ --query or --ref option"
-    cat ${USAGE2}
+    echo "\e[31;1m ERROR@ --query or --ref option\n Query and Reference must be identified." && cat ${USAGE}
     exit
 fi
 
