@@ -50,7 +50,7 @@ Finally, blastn or blastp is executed with the parameters written in ./setting.t
 < Testcase >
 ```zsh
 % cd ${pBLASTDIR}
-% ./execBLAST --mode blastn --query ./testcase/test_query.fasta --ref ./testcase/test_reference.fasta --outdir ./testcase
+% ./pBLAST --mode blastn --query ./testcase/test_query.fasta --ref ./testcase/test_reference.fasta --outdir ./testcase
 ```
 and check the results in ./testcase .
 

@@ -28,10 +28,8 @@
    *              --help: open this page.
 
 < Testcase >
-```zsh
-% cd ${pBLASTDIR}
-% ./execBLAST --mode blastn --query ./testcase/test_query.fasta --ref ./testcase/test_reference.fasta --outdir ./testcase
-```
+  % cd ${pBLASTDIR}
+  % pBLAST --mode blastn --query ./testcase/test_query.fasta --ref ./testcase/test_reference.fasta --outdir ./testcase
 and check the results in ./testcase .
 
 -------------------------------------------------------------------------

@@ -142,14 +142,14 @@ echo "================================================"
 
 # --- execution --- #
 echo "\e[m Make BLAST DataBase......"
-\Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecMakeBlastDBCode.R ${MODE} ${REFERENCE} ${SCRIPTPATH}
+\Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecMakeBlastDBCode.R ${MODE} ${REFERENCE}
 zsh ${SCRIPTPATH}/makeblastdb.sh
 echo "\e[32;1m   Done."
 
 echo "\e[m Make Command for BLAST......"
 \Rscript --vanilla --slave ${SCRIPTPATH}/ExtractSeqofFocusedGene.R ${QUERY} ${TARGETGENEFILE} ${OUTPUTDIR}
 TARGETSEQFILE=${OUTPUTDIR}/SequenceofFocusedGene.fasta
-\Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecBlastCode.R ${MODE} ${TARGETSEQFILE} ${REFERENCE} ${SETTINGFILE} ${SCRIPTPATH}
+\Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecBlastCode.R ${MODE} ${TARGETSEQFILE} ${REFERENCE} ${SETTINGFILE}
 echo "\e[32;1m   Done."
 
 if [ ! -e ${OUTPUTDIR} ]; then
@@ -162,7 +162,7 @@ echo "\e[m BLASTing......."
 zsh ${SCRIPTPATH}/blast.sh > ${OUTPUTDIR}/BLAST_Result.txt
 echo "\e[32;1m   Done."
 
-if [ ${SBHFLAG} != "FALSE" ]; then
+if [ ${SBHMODE} != "FALSE" ]; then
     echo "\e[m Make Single-directional Best Hit Table......"
     \Rscript --vanilla --slave ${SCRIPTPATH}/ForAdditionalAnalysis/MakeSBHSubset.R -t ${OUTPUTDIR} -p ${QPREFIX} ${RPREFIX}
     echo "\e[32;1m   Done."
