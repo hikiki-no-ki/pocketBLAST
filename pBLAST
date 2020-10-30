@@ -143,7 +143,7 @@ echo "================================================"
 # --- execution --- #
 echo "\e[m Make BLAST DataBase......"
 \Rscript --vanilla --slave ${SCRIPTPATH}/MakeExecMakeBlastDBCode.R ${MODE} ${REFERENCE}
-zsh ${SCRIPTPATH}/makeblastdb.sh
+zsh ./makeblastdb.sh
 echo "\e[32;1m   Done."
 
 echo "\e[m Make Command for BLAST......"
@@ -159,7 +159,7 @@ if [ ! -e ${OUTPUTDIR} ]; then
 fi
 
 echo "\e[m BLASTing......."
-zsh ${SCRIPTPATH}/blast.sh > ${OUTPUTDIR}/BLAST_Result.txt
+zsh ./blast.sh > ${OUTPUTDIR}/BLAST_Result.txt
 echo "\e[32;1m   Done."
 
 if [ ${SBHMODE} != "FALSE" ]; then
@@ -170,10 +170,10 @@ fi
 
 echo "\e[m Cleaning......."
 if [ ${DEBUGMODE} = "FALSE" ]; then
-    \rm ${SCRIPTPATH}/makeblastdb.sh
-    \rm ${SCRIPTPATH}/blast.sh
+    \rm ./makeblastdb.sh
+    \rm ./blast.sh
 fi
-\rm ${SCRIPTPATH}/makeblast_log.txt
+\rm ./makeblast_log.txt
 \rm ${REFERENCE}.???
 echo "\e[32;1m   Done."
 
