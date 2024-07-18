@@ -10,6 +10,14 @@ newpath <- gsub(pattern=")",replacement="", x=Sys.getenv(".libPaths(new"))
 
 library(seqinr)
 
+## Function to add directory
+addir <- function(outputdir){
+  if( !file.exists(outputdir) ){
+    dir.create(outputdir, recursive=T)
+    print( paste("Generated:", outputdir) )
+  }
+}
+
 args <- commandArgs()[ 2:length(commandArgs()) ]
 args <- args[ substring(args, 1, 1)!="-" ]
 queryfile <- args[1]
@@ -24,4 +32,5 @@ if(targetgenefile != "0"){
 }
 
 query <- query_db[ gene ]
+addir( outputdir )
 write.fasta( sequences=query, names=t(gene), paste(outputdir, "SequenceofFocusedGene.fasta", sep="/") )
